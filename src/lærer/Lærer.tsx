@@ -17,7 +17,6 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import CloseIcon from "@mui/icons-material/Close";
-import { Delete } from "@mui/icons-material";
 
 const Lærer = () => {
 	const [Elever, SetElever] = useState<elev[]>();
