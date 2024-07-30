@@ -9,6 +9,8 @@ const Elev = () => {
 	const [Elever, SetElever] = useState<elev[]>([]);
 	const [Elev, SetElev] = useState<elev>();
 
+	const [Karakterer, SetKarakterer] = useState<number[]>([]);
+
 	const GetData = async () => {
 		console.log("gotten data");
 		const data = await getDoc(doc(db, "data", "yessir"));
@@ -27,6 +29,21 @@ const Elev = () => {
 		});
 	}, [Elever]);
 
+	useEffect(() => {
+		SetKarakterer([]);
+		Elev?.Fag.map((f) => {
+			SetKarakterer((prev) => [...prev, f.karakter]);
+		});
+	}, [Elev]);
+
+	const CalcMedian = () => {
+		var total: number = 0;
+		Karakterer.map((k) => {
+			total += k;
+		});
+		var median = total / Karakterer.length;
+		return median;
+	};
 	return (
 		<>
 			{Elev ? (
@@ -46,6 +63,19 @@ const Elev = () => {
 							</>
 						);
 					})}
+
+					<p>
+						Laveste karakter: {Karakterer.sort((a, b) => a - b)[0]}
+					</p>
+					<p>
+						Højeste karakter:{" "}
+						{
+							Karakterer.sort((a, b) => a + b)[
+								Karakterer.length - 1
+							]
+						}
+					</p>
+					<p>Gennemsnit: {CalcMedian()}</p>
 				</>
 			) : (
 				<p>loading...</p>

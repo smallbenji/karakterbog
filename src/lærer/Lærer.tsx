@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import CloseIcon from "@mui/icons-material/Close";
+import { Delete } from "@mui/icons-material";
 
 const Lærer = () => {
 	const [Elever, SetElever] = useState<elev[]>();
@@ -35,6 +37,8 @@ const Lærer = () => {
 
 	const [NewFag, SetNewFag] = useState<string>("");
 
+	const [Karakterer, SetKarakterer] = useState<number[]>([]);
+
 	const handleClose = () => {
 		setOpen(false);
 	};
@@ -53,6 +57,10 @@ const Lærer = () => {
 		});
 		handleClose();
 	};
+
+	useEffect(() => {
+		console.log(Karakterer);
+	}, [Karakterer]);
 
 	const getData = async () => {
 		const data = (await getDoc(doc(db, "data", "yessir"))).data()
@@ -79,6 +87,11 @@ const Lærer = () => {
 				} else {
 					return elev;
 				}
+			})
+		);
+		await SetKarakterer(
+			SelectedElev.Fag.map((e) => {
+				return e.karakter as number;
 			})
 		);
 	};
@@ -111,6 +124,29 @@ const Lærer = () => {
 		console.log(Elever);
 		await setDoc(doc(db, "data", "yessir"), { data: Elever });
 		alert("uploaded...");
+	};
+
+	const CalcMedian = () => {
+		var total: number = 0;
+		Karakterer.map((k) => {
+			total += k;
+		});
+		var median = total / Karakterer.length;
+		return median;
+	};
+
+	const Delete = (id: string) => {
+		var nyeFag: Karakter[] = [];
+
+		SelectedElev.Fag.map((fag) => {
+			if (fag.id != id) {
+				nyeFag.push(fag);
+			}
+		}),
+			SetSelectedElev((prev) => ({
+				...prev,
+				Fag: [...nyeFag],
+			}));
 	};
 
 	return (
@@ -149,6 +185,15 @@ const Lærer = () => {
 						{SelectedElev.Fag.map((fag) => {
 							return (
 								<Grid item xs={12} sm={6} md={6} lg={3}>
+									<Button
+										variant="contained"
+										color="error"
+										onClick={() => {
+											Delete(fag.id);
+										}}
+									>
+										<CloseIcon />
+									</Button>
 									<h1>{fag.Fag}</h1>
 
 									<ButtonGroup>
@@ -237,13 +282,21 @@ const Lærer = () => {
 											12
 										</Button>
 									</ButtonGroup>
-									<p>Valgt: {fag.karakter}</p>
+									<div style={{ marginTop: "20px" }}></div>
+									{/* <p>Valgt: {fag.karakter}</p> */}
 								</Grid>
 							);
 						})}
 					</Grid>
 				</>
 			) : null}
+
+			<p>Laveste karakter: {Karakterer.sort((a, b) => a - b)[0]}</p>
+			<p>
+				Højeste karakter:{" "}
+				{Karakterer.sort((a, b) => a + b)[Karakterer.length - 1]}
+			</p>
+			<p>Gennemsnit: {CalcMedian()}</p>
 
 			<Button
 				variant="contained"
