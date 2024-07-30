@@ -7,6 +7,11 @@ type elev = {
 };
 
 type Karakter = {
+	id: string;
 	Fag: string;
 	karakter: -3 | 0 | 2 | 4 | 7 | 10 | 12;
+};
+
+type DataIncoming = {
+	data: elev[];
 };
