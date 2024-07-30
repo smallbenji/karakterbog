@@ -55,6 +55,7 @@ const Lærer = () => {
 			],
 		});
 		handleClose();
+		SetNewFag("");
 	};
 
 	useEffect(() => {
